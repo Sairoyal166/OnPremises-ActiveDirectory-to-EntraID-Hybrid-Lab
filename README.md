@@ -22,3 +22,13 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
 | **Automation & Audit** | PowerShell | Hybrid join verification (`dsregcmd`) and policy updates |
 
 ---
+## Phase 1 — Building the Foundation
+
+### Step 1: Virtual Environment Provisioning
+* **Hypervisor Setup:** Installed and configured **Oracle VirtualBox** on the physical host machine to simulate an isolated enterprise data center.
+* **Virtual Network Architecture:** Configured a dedicated virtual network segment (`Internal Network` / `NAT Network`) so the Domain Controller and corporate workstation could communicate privately while maintaining controlled internet access for cloud synchronization.
+* **Virtual Machine Provisioning:** Built and allocated dedicated compute, memory, and storage resources for two core enterprise nodes:
+  * **DC01 (`Windows Server 2022`):** Primary Domain Controller and DNS server (2 vCPUs, 4 GB RAM, dynamically allocated VDI storage).
+
+
+<img width="2558" height="1406" alt="image" src="https://github.com/user-attachments/assets/636fa237-c1ae-4423-a925-399ce9108b6c" />
