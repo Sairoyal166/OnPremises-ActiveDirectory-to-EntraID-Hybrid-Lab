@@ -53,3 +53,5 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
 * **Role Installation:** Installed the **Active Directory Domain Services (AD DS)** and **DNS Server** roles on the **Windows Server 2022** (`windows-server-2022`) virtual machine via Server Manager.
 * **Domain Promotion:** Promoted the server to a primary Domain Controller, creating a new forest and root domain named **`corp.local`** (NetBIOS: `CORP`) with **Global Catalog (GC)** enabled and a DSRM recovery password configured.
 * **Post-Reboot Validation:** Rebooted the Domain Controller and verified that core directory services (`NTDS`, `DNS`, `Netlogon`, `KDC`) were running and Active Directory DNS zones (`_msdcs.corp.local` and `corp.local`) were populated.
+
+
