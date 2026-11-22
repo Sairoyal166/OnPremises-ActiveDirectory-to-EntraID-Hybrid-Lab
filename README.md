@@ -133,10 +133,17 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
 * **Endpoint & Cloud Registration Audit:** Verified Hybrid Entra Join and MDM registration locally via PowerShell (`dsregcmd /status` confirming `AzureAdJoined : YES` and `DomainJoined : YES`) and confirmed the Windows 11 workstation appeared as **Microsoft Intune** managed in both the Microsoft Entra and Intune admin centers
 
 > **Why this matters:** Combining Just-In-Time PIM role elevation, automated risk detection, and silent Intune MDM enrollment establishes a complete Zero Trust security posture—protecting both cloud identities and on-premises domain endpoints without sacrificing end-user productivity.
+---
+## Repository Structure
 
-
-
-
+```text
+OnPremises-ActiveDirectory-to-EntraID-Hybrid-Lab/
+├── docs/
+│   └── Configuration-Guide.md
+├── scripts/
+│   └── Verify-HybridEnrollment.ps1
+├── LICENSE
+└── README.md
 
 
 
