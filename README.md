@@ -92,6 +92,57 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
 
 <img width="2477" height="1208" alt="image" src="https://github.com/user-attachments/assets/be34d879-78e1-4d67-95ca-1a694795fbce" /> 
 
+## Phase 3 — Connecting On-Premises AD to Entra ID
+
+### Step 1: Cloud Tenant Setup, Licensing & MDM Scope (`CorpLab-Entra`)
+* **Provisioning the Cloud Tenant:** Configured the **`CorpLab-Entra`** directory in the Microsoft Entra admin center (`entra.microsoft.com`) to serve as the cloud identity provider paired with the on-premises `corp.local` domain.
+* **Assigning Enterprise Licenses:** Activated and assigned **Microsoft Entra ID P2** and **Microsoft Intune** licenses to user accounts (including **`Devi Shree`**) to unlock hybrid identity governance, Privileged Identity Management (PIM), Identity Protection, and cloud endpoint management.
+* **Configuring MDM Auto-Enrollment Scope:** Navigated to **Identity -> Mobility (MDM and WIP) -> Microsoft Intune**, set the **MDM user scope** to **All** (and kept **WIP user scope** set to **None**), and saved the configuration so domain-joined Windows 11 devices can automatically register in Intune upon hybrid sync.
+
+> **Why this matters:** Setting the MDM user scope to **All** and assigning Entra ID P2/Intune licenses beforehand ensures that once on-premises accounts synchronize to the cloud, they are immediately authorized for automatic device enrollment and zero-trust security controls.
+
+<img width="2130" height="1218" alt="image" src="https://github.com/user-attachments/assets/434b6814-5fba-46f8-a4b7-c87aeb26e3bd" /> 
+
+### Step 2: Installing & Configuring Microsoft Entra Connect
+* **Sync Engine Installation:** Downloaded and installed the **Microsoft Entra Connect** MSI setup wizard directly on **`windows-server-2022`** to establish the bridge between the on-premises `corp.local` directory and **`CorpLab-Entra`**.
+* **Authentication & Sign-In Configuration:** Selected **Password Hash Synchronization (PHS)** as the user sign-in method and authenticated with both the cloud Global Administrator (`CorpLab-Entra`) and on-premises Enterprise Administrator (`CORP\Administrator`) accounts.
+* **Directory & Hybrid Join Setup:** Configured domain/OU synchronization filtering for **`corp.local`** and enabled **Hybrid Microsoft Entra Join** (configuring the Service Connection Point in Active Directory so domain-joined Windows 11 machines can register automatically in Entra ID).
+
+### Step 3: Running & Verifying Initial Directory Synchronization
+* **Initial & Delta Sync Cycles:** Executed the initial full synchronization cycle upon completing the Entra Connect wizard, and triggered on-demand delta syncs via PowerShell (`Start-ADSyncSyncCycle -PolicyType Delta`) to replicate on-premises users, groups, and computer objects to the cloud.
+* **Cloud Sync Verification:** Confirmed inside the Microsoft Entra admin center (**Identity -> Hybrid management -> Microsoft Entra Connect**) that **Connect sync** status showed **Enabled**, and verified that synchronized accounts (such as **`Devi Shree`** and **`Surendra Singh`**) appeared under **Users** with **On-premises sync enabled = Yes** (`Windows Server AD`).
+
+<img width="2148" height="1226" alt="image" src="https://github.com/user-attachments/assets/feb4fe33-035a-4625-b91c-5a01fae89bc6" />
+
+
+> **Why this matters:** Password Hash Synchronization allows users to authenticate to cloud apps using their existing on-premises Active Directory credentials without deploying complex AD FS infrastructure, while the Service Connection Point enables seamless Hybrid Entra Join for domain-joined endpoints.
+
+<img width="2106" height="1352" alt="image" src="https://github.com/user-attachments/assets/61e974e0-d69b-4d95-b8cc-40bd0c92df4d" />
+
+## Phase 4 — Cloud Security Governance & Verification
+
+### Step 1: Privileged Identity Management (PIM) & Just-In-Time (JIT) Access
+* **Eliminating Standing Admin Privileges:** Configured **Microsoft Entra Privileged Identity Management (PIM)** in **`CorpLab-Entra`** so administrative accounts operate under Zero Standing Privilege by default.
+* **Eligible Role Assignment & Activation:** Assigned the **User Administrator** role as **Eligible** (rather than Permanent) to **`Devi Shree`** and validated the live Just-In-Time (JIT) elevation workflow—requiring a documented business justification before granting time-bound administrative permissions.
+
+  <img width="2090" height="1182" alt="image" src="https://github.com/user-attachments/assets/613ea12d-b8fc-42c2-ab45-45c6af8ef3a7" />
+
+
+### Step 2: Threat Detection & Self-Service Identity Governance
+* **Microsoft Entra ID Protection:** Activated real-time identity threat telemetry to continuously monitor for anomalous sign-ins, impossible travel, and compromised credentials across synchronized and cloud accounts.
+* **Self-Service Password Reset (SSPR) & Password Writeback:** Enabled **SSPR** with multi-method authentication registration and configured **Password Writeback** in Microsoft Entra Connect (alongside setting on-premises Minimum Password Age to `0` days) so hybrid users can securely reset forgotten passwords from the cloud directly back to `corp.local`.
+
+### Step 3: Hybrid Entra Join & Intune MDM Enrollment Verification
+* **GPO Refresh & Task Scheduler Trigger:** Executed `gpupdate /force` on **`Windows-11-Client`** and triggered the background MDM auto-enrollment scheduled task via **Task Scheduler (`taskschd.msc`)** under `\Microsoft\Windows\EnterpriseMgmt\
+* **Endpoint & Cloud Registration Audit:** Verified Hybrid Entra Join and MDM registration locally via PowerShell (`dsregcmd /status` confirming `AzureAdJoined : YES` and `DomainJoined : YES`) and confirmed the Windows 11 workstation appeared as **Microsoft Intune** managed in both the Microsoft Entra and Intune admin centers
+
+> **Why this matters:** Combining Just-In-Time PIM role elevation, automated risk detection, and silent Intune MDM enrollment establishes a complete Zero Trust security posture—protecting both cloud identities and on-premises domain endpoints without sacrificing end-user productivity.
+
+
+
+
+
+
 
 
 
