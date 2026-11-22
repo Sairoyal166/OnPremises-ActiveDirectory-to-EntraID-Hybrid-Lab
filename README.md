@@ -61,3 +61,9 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
 
 <img width="2397" height="1093" alt="image" src="https://github.com/user-attachments/assets/a2d2c30b-2ade-42f5-a838-fab0c927f8f2" />
 
+### Step 3: Domain-Joining the Windows 11 Workstation
+* **Verifying DNS & Connectivity:** Confirmed that **`Windows-11-Client`** (`Windows 11 Enterprise`) resolved **`corp.local`** directly to **`windows-server-2022`** before initiating the domain join.
+* **Joining the Domain (`corp.local`):** Opened **Settings -> System -> About -> Rename this PC (advanced)** (or `sysdm.cpl`), clicked **Change**, switched membership from `WORKGROUP` to the **`corp.local`** domain, authenticated with `CORP\Administrator` credentials, and rebooted the workstation to register its computer object in Active Directory.
+* **Validating Domain Logon & Kerberos Authentication:** At the Windows 11 lock screen, selected **Other user** and signed in with **`Devi Shree`** (`CORP\Devi Shree` / `Devishree@corp.local`) to verify domain authentication, profile creation, and standard user privilege boundaries.
+  <img width="1019" height="740" alt="image" src="https://github.com/user-attachments/assets/5d43fa23-9c95-4aea-bc6f-816c8d6a16ac" />
+
