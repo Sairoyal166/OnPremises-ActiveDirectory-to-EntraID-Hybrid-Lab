@@ -15,12 +15,12 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
 | Layer | Technology | Purpose |
 | :--- | :--- | :--- |
 | **Virtualization** | Oracle VirtualBox | Isolated enterprise lab host environment |
-| **On-Premises Server** | Windows Server 2022 | Domain Controller (`corp.local`), AD DS, DNS, and GPOs |
+| **On-Premises Server** | Windows Server 2022 | Domain Controller, AD DS, DNS, and GPOs |
 | **Client Workstation** | Windows 11 Enterprise | Domain-joined corporate endpoint |
 | **Hybrid Sync Engine** | Microsoft Entra Connect | Synchronizes AD users, groups, and password hashes |
-| **Cloud Identity** | Microsoft Entra ID (P2) | Cloud directory (`CorpLab-Entra`), PIM, and ID Protection |
+| **Cloud Identity** | Microsoft Entra ID (P2) | Cloud directory , PIM, and ID Protection |
 | **Endpoint Management** | Microsoft Intune | Automated MDM device enrollment and compliance |
-| **Automation & Audit** | PowerShell | Hybrid join verification (`dsregcmd`) and policy updates |
+| **Automation & Audit** | PowerShell | Hybrid join verification  and policy updates |
 
 ---
 
@@ -55,7 +55,7 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
 * **Post-Reboot Validation:** Rebooted the Domain Controller and verified that core directory services (`NTDS`, `DNS`, `Netlogon`, `KDC`) were running and Active Directory DNS zones (`msdcs.corp.local` and `corp.local`) were populated.
 
 ### Step 2: Creating Organizational Units (OUs), Directory Objects & User Lifecycle Management
-* **Creating Departmental OUs (`dsa.msc`):** Opened **Active Directory Users and Computers (`dsa.msc`)** via Server Manager -> Tools on **`windows-server-2022`**, right-clicked **`corp.local`** -> **New** -> **Organizational Unit**, and created dedicated departmental OUs (**`Company Users`**, **`Facilities`**, **`HR Department`**, **`IT`**, **`Logistics`**, **`Marketing`**, and **`Sales`**) to isolate users, endpoints, and shared resources from default containers.
+* **Creating Departmental OUs ** Opened **Active Directory Users and Computers ** via Server Manager -> Tools on **`windows-server-2022`**, right-clicked **`corp.local`** -> **New** -> **Organizational Unit**, and created dedicated departmental OUs (**`Company Users`**, **`Facilities`**, **`HR Department`**, **`IT`**, **`Logistics`**, **`Marketing`**, and **`Sales`**) to isolate users, endpoints, and shared resources from default containers.
 * **Provisioning Departmental Users, Computers & Printers:** Right-clicked the target departmental OU (such as **`Sales`**) -> **New** to create and organize directory objects:
   * **Users (`New -> User`):** Created standard domain user accounts within their respective departments — including **`Devi Shree`** (`CORP\Devi Shree` / `Devishree@corp.local`) and **`Surendra Singh`** inside **`Sales`** — with compliant domain passwords.
   * **Computers (`New -> Computer` / Domain Join):** Pre-staged computer objects (`DESKTOP-0A...`) inside their departmental OUs (or moved joined workstations from the default **`Computers`** container) so computer-level GPOs target each department accurately.
@@ -91,6 +91,10 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
 > **Why this matters:** Linking custom Group Policy Objects to dedicated departmental OUs allows administrators to enforce granular security baselines, web restrictions, centralized logging, and automated MDM onboarding without modifying default domain containers.
 
 <img width="2477" height="1208" alt="image" src="https://github.com/user-attachments/assets/be34d879-78e1-4d67-95ca-1a694795fbce" /> 
+
+
+
+
 
 
 
