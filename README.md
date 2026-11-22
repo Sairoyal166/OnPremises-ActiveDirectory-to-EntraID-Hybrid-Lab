@@ -54,12 +54,22 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
 * **Domain Promotion:** Promoted the server to a primary Domain Controller, creating a new forest and root domain named **`corp.local`** (NetBIOS: `CORP`) with **Global Catalog (GC)** enabled and a DSRM recovery password configured.
 * **Post-Reboot Validation:** Rebooted the Domain Controller and verified that core directory services (`NTDS`, `DNS`, `Netlogon`, `KDC`) were running and Active Directory DNS zones (`msdcs.corp.local` and `corp.local`) were populated.
 
-### Step 2: Creating Organizational Units (OUs) & Domain Users
-* **Opening AD Management Console:** Launched **Active Directory Users and Computers (`dsa.msc`)** via Server Manager -> Tools on **`windows-server-2022`** and expanded the **`corp.local`** domain tree.
-* **Creating Organizational Units (OUs):** Right-clicked **`corp.local`** -> **New** -> **Organizational Unit** to structure dedicated OUs (separating corporate workstations and user accounts for targeted Group Policy application).
-* **Provisioning Domain Users:** Right-clicked the target OU / `Users` container -> **New** -> **User**, created the **`Devi Shree`** account (`CORP\Devi Shree` / `Devishree@corp.local`), set a compliant domain password, and enabled **Password never expires** for lab testing.
+### Step 2: Creating Organizational Units (OUs), Directory Objects & User Lifecycle Management
+* **Creating Departmental OUs (`dsa.msc`):** Opened **Active Directory Users and Computers (`dsa.msc`)** via Server Manager -> Tools on **`windows-server-2022`**, right-clicked **`corp.local`** -> **New** -> **Organizational Unit**, and created dedicated departmental OUs (**`Company Users`**, **`Facilities`**, **`HR Department`**, **`IT`**, **`Logistics`**, **`Marketing`**, and **`Sales`**) to isolate users, endpoints, and shared resources from default containers.
+* **Provisioning Departmental Users, Computers & Printers:** Right-clicked the target departmental OU (such as **`Sales`**) -> **New** to create and organize directory objects:
+  * **Users (`New -> User`):** Created standard domain user accounts within their respective departments — including **`Devi Shree`** (`CORP\Devi Shree` / `Devishree@corp.local`) and **`Surendra Singh`** inside **`Sales`** — with compliant domain passwords.
+  * **Computers (`New -> Computer` / Domain Join):** Pre-staged computer objects (`DESKTOP-0A...`) inside their departmental OUs (or moved joined workstations from the default **`Computers`** container) so computer-level GPOs target each department accurately.
+  * **Security Groups (`New -> Group`):** Created departmental security groups (such as **`Sales_Team`**) to assign permissions and group policies via Role-Based Access Control (RBAC).
+  * **Network Printers (`New -> Printer`):** Published shared network printers inside departmental OUs (`\\server\printer_share`) so employees can locate and connect to department printers directly through Active Directory.
+* **Employee Onboarding & Offboarding Lifecycle:**
+  * **Onboarding:** Provisioned new hires directly in their assigned department OU, added them to their department security group (e.g., `Sales_Team`), configured logon scripts/home folders, and required password change at next logon.
+  * **Offboarding:** Disabled compromised or departing user accounts (`Right-click -> Disable Account`) to immediately revoke Kerberos/NTLM authentication while preserving audit history, removed security group memberships, and moved disabled accounts to a dedicated offboarding/disabled OU before deprovisioning.
 
-<img width="2397" height="1093" alt="image" src="https://github.com/user-attachments/assets/a2d2c30b-2ade-42f5-a838-fab0c927f8f2" />
+*Active Directory Users and Computers (`dsa.msc`) showing the `Sales` OU containing `DESKTOP-0A...` (Computer), `Devi Shree` and `Surendra Singh` (Users), `Sales_Team` (Security Group), and the `New` object creation menu (`Computer`, `Group`, `Printer`, `User`).*
+
+<img width="2455" height="1181" alt="image" src="https://github.com/user-attachments/assets/884cc213-83a0-42e1-9257-636433755a43" />
+
+<img width="2397" height="1093" alt="image" src="https://github.com/user-attachments/assets/a2d2c30b-2ade-42f5-a838-fab0c927f8f2" /> 
 
 ### Step 3: Domain-Joining the Windows 11 Workstation
 * **Verifying DNS & Connectivity:** Confirmed that **`Windows-11-Client`** (`Windows 11 Enterprise`) resolved **`corp.local`** directly to **`windows-server-2022`** before initiating the domain join.
@@ -68,19 +78,20 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
   
   <img width="1019" height="740" alt="image" src="https://github.com/user-attachments/assets/5d43fa23-9c95-4aea-bc6f-816c8d6a16ac" />
 
-  ### Step 4: Organizing Computer Objects & Configuring Group Policy (`gpmc.msc`)
-* **Structuring OUs & Computer Objects:** Organized the **`corp.local`** directory into dedicated departmental Organizational Units — **`Company Users`**, **`Facilities`**, **`HR Department`**, **`IT`**, **`Logistics`**, **`Marketing`**, and **`Sales`** — and placed domain-joined workstations (including `DESKTOP-...`) and user accounts (`Devi Shree`) into their respective OUs for targeted policy assignment.
+ ### Step 4: Configuring & Linking Group Policy Objects (`gpmc.msc`)
 * **Creating Custom Group Policy Objects:** Opened **Group Policy Management (`gpmc.msc`)** on **`windows-server-2022`** and configured four custom GPOs alongside the `Default Domain Policy`:
   * **`IT_Desktop_policy`:** Enforces standardized desktop configuration and workstation baseline restrictions.
   * **`Youtube_Restriction`:** Implements acceptable-use web/application access restrictions across targeted departmental OUs.
   * **`GPO_Event_Forwarding`:** Configures centralized Windows Event Forwarding and security log collection from domain endpoints.
   * **`Intune MDM Auto Enrolment`:** Prepares domain-joined workstations for zero-touch MDM enrollment (`Enable automatic MDM enrollment using default Azure AD credentials`).
-* **Policy Verification:** Linked the GPOs to their target OUs and verified policy application on **`Windows-11-Client`** using `gpupdate /force` and `gpresult /r`.
+* **Linking & Policy Verification:** Linked the GPOs to their respective departmental Organizational Units under **`corp.local`** and verified policy application on **`Windows-11-Client`** using `gpupdate /force` and `gpresult /r`.
 
 *Group Policy Management (`gpmc.msc`) on `windows-server-2022` displaying the custom GPOs (`GPO_Event_Forwarding`, `Intune MDM Auto Enrolment`, `IT_Desktop_policy`, `Youtube_Restriction`) and departmental OUs under `corp.local`.*
 
-> **Why this matters:** Grouping users and computers into dedicated departmental OUs allows administrators to enforce granular security baselines, web restrictions, centralized logging, and automated MDM onboarding without modifying default domain containers.
+> **Why this matters:** Linking custom Group Policy Objects to dedicated departmental OUs allows administrators to enforce granular security baselines, web restrictions, centralized logging, and automated MDM onboarding without modifying default domain containers.
 
-<img width="2477" height="1208" alt="image" src="https://github.com/user-attachments/assets/be34d879-78e1-4d67-95ca-1a694795fbce" />
+<img width="2477" height="1208" alt="image" src="https://github.com/user-attachments/assets/be34d879-78e1-4d67-95ca-1a694795fbce" /> 
+
+
 
 
