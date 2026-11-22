@@ -33,10 +33,6 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
   * **`windows-server-2022` (`Windows Server 2022`):** Primary Domain Controller and DNS server (2 vCPUs, 4 GB RAM, dynamically allocated VDI storage).
   * **`Windows-11-Client` (`Windows 11 Enterprise`):** Corporate endpoint workstation used for domain join, Group Policy testing, and Intune enrollment (2 vCPUs, 4 GB RAM, dynamically allocated VDI storage).
 
-![Oracle VirtualBox Manager](screenshots/01-virtualbox-vms.png)
-
-*Oracle VirtualBox Manager showing the provisioned Windows Server 2022 Domain Controller (`windows-server-2022`) and Windows 11 Enterprise client (`Windows-11-Client`) VMs on NatNetwork.*
-
 ### Step 2: Static Networking & DNS Configuration
 * **Domain Controller Static IP:** Assigned a static IPv4 address (`192.168.10.10/24`) to **`windows-server-2022`** so client machines and DNS records always resolve to a consistent server endpoint.
 * **Local DNS Loopback:** Configured **`windows-server-2022`**'s preferred DNS server to point to its own static IP / loopback (`127.0.0.1`) in preparation for hosting the Active Directory-integrated DNS zone.
