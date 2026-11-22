@@ -65,5 +65,22 @@ The IT team decided it was time to **modernize and extend to the cloud**. The go
 * **Verifying DNS & Connectivity:** Confirmed that **`Windows-11-Client`** (`Windows 11 Enterprise`) resolved **`corp.local`** directly to **`windows-server-2022`** before initiating the domain join.
 * **Joining the Domain (`corp.local`):** Opened **Settings -> System -> About -> Rename this PC (advanced)** (or `sysdm.cpl`), clicked **Change**, switched membership from `WORKGROUP` to the **`corp.local`** domain, authenticated with `CORP\Administrator` credentials, and rebooted the workstation to register its computer object in Active Directory.
 * **Validating Domain Logon & Kerberos Authentication:** At the Windows 11 lock screen, selected **Other user** and signed in with **`Devi Shree`** (`CORP\Devi Shree` / `Devishree@corp.local`) to verify domain authentication, profile creation, and standard user privilege boundaries.
+  
   <img width="1019" height="740" alt="image" src="https://github.com/user-attachments/assets/5d43fa23-9c95-4aea-bc6f-816c8d6a16ac" />
+
+  ### Step 4: Organizing Computer Objects & Configuring Group Policy (`gpmc.msc`)
+* **Structuring OUs & Computer Objects:** Organized the **`corp.local`** directory into dedicated departmental Organizational Units — **`Company Users`**, **`Facilities`**, **`HR Department`**, **`IT`**, **`Logistics`**, **`Marketing`**, and **`Sales`** — and placed domain-joined workstations (including `DESKTOP-...`) and user accounts (`Devi Shree`) into their respective OUs for targeted policy assignment.
+* **Creating Custom Group Policy Objects:** Opened **Group Policy Management (`gpmc.msc`)** on **`windows-server-2022`** and configured four custom GPOs alongside the `Default Domain Policy`:
+  * **`IT_Desktop_policy`:** Enforces standardized desktop configuration and workstation baseline restrictions.
+  * **`Youtube_Restriction`:** Implements acceptable-use web/application access restrictions across targeted departmental OUs.
+  * **`GPO_Event_Forwarding`:** Configures centralized Windows Event Forwarding and security log collection from domain endpoints.
+  * **`Intune MDM Auto Enrolment`:** Prepares domain-joined workstations for zero-touch MDM enrollment (`Enable automatic MDM enrollment using default Azure AD credentials`).
+* **Policy Verification:** Linked the GPOs to their target OUs and verified policy application on **`Windows-11-Client`** using `gpupdate /force` and `gpresult /r`.
+
+*Group Policy Management (`gpmc.msc`) on `windows-server-2022` displaying the custom GPOs (`GPO_Event_Forwarding`, `Intune MDM Auto Enrolment`, `IT_Desktop_policy`, `Youtube_Restriction`) and departmental OUs under `corp.local`.*
+
+> **Why this matters:** Grouping users and computers into dedicated departmental OUs allows administrators to enforce granular security baselines, web restrictions, centralized logging, and automated MDM onboarding without modifying default domain containers.
+
+<img width="2477" height="1208" alt="image" src="https://github.com/user-attachments/assets/be34d879-78e1-4d67-95ca-1a694795fbce" />
+
 
